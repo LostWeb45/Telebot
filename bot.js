@@ -57,7 +57,6 @@ bot.on("callback_query:data", async (ctx) => {
         );
       }
 
-      //   await() => {
       setTimeout(() => {
         const restartKeyboard = new InlineKeyboard()
           .text("Играть снова", "restart_game")
@@ -74,11 +73,9 @@ bot.on("callback_query:data", async (ctx) => {
     // Удаляем состояние игры, когда она завершена
     delete gameState[ctx.chat.id];
   }
-  //   }
 
   // Обработчик для перезапуска игры
   if (gameChoice === "restart_game") {
-    // ctx.reply("Начнем новую игру в Орел и решка!");
     gameState[ctx.chat.id] = "game1"; // Записываем, что пользователь снова в игре
     startGame1(ctx); // Перезапускаем игру
   }
