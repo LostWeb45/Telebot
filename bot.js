@@ -1,12 +1,21 @@
 const { Bot, InlineKeyboard } = require("grammy");
 
-const bot = new Bot("7956735247:AAFV_iB9H136sitrQvhPvTmOV2zIxHqvPqM");
+const token = "7956735247:AAFV_iB9H136sitrQvhPvTmOV2zIxHqvPqM";
 
+const bot = new Bot(token);
+
+// Храним состояние пользователя в контексте
+const gameState = {};
+
+// Обработчик команды /start
 bot.command("start", (ctx) => {
   const keyboard = new InlineKeyboard()
-    .text("Орел и решка", "orelandrescha")
-    .text("Камень, кожницы, бумага", "cmnplay")
-    .text("Угадай число", "changnumb");
+    .text("Орел и решка", "game1")
+    .row()
+    .text("Камень, ножницы, бумага", "game2")
+    .row()
+    .text("Угадай число", "game3");
+
   ctx.reply(
     "Привет! Я Стив).\nНапиши /help, чтобы узнать что я умею. Или выбери игру: ",
     {
@@ -15,49 +24,63 @@ bot.command("start", (ctx) => {
   );
 });
 
+// Обработчик нажатия на кнопки выбора игры
 bot.on("callback_query:data", (ctx) => {
-  const data = ctx.callbackQuery.data;
+  const gameChoice = ctx.callbackQuery.data;
 
-  if (data === "orelandrescha") {
+  ctx.answerCallbackQuery();
+
+  if (gameChoice === "game1") {
+    gameState[ctx.chat.id] = "game1"; // Записываем, что пользователь в игре 1
     ctx.reply("Начнем игру в Орел и решка!");
-  } else if (data === "cmnplay") {
-    ctx.reply("Начнем игру в Камень, ножница, бумага");
-  } else if (data === "changnumb") {
-    ctx.reply("Начнем игру Угадай число");
+    startGame1(ctx); // Начинаем игру 1
+  } else if (gameChoice === "game2") {
+    gameState[ctx.chat.id] = "game2"; // Записываем, что пользователь в игре 2
+    ctx.reply("Вы выбрали Игра 2. Начинаем...");
+    startGame2(ctx); // Начинаем игру 2
+  } else if (gameChoice === "game3") {
+    gameState[ctx.chat.id] = "game3"; // Записываем, что пользователь в игре 3
+    ctx.reply("Вы выбрали Игра 3. Начинаем...");
+    startGame3(ctx); // Начинаем игру 3
+  }
+  // Обработчик для выбора "Орел" или "Решка"
+  else if (gameChoice === "orel" || gameChoice === "rescha") {
+    if (gameState[ctx.chat.id] === "game1") {
+      const result = Math.random() < 0.5 ? "orel" : "rescha"; // Случайный результат
+      if (gameChoice === result) {
+        ctx.reply(`Вы выбрали ${gameChoice}, и выпал ${result}! Вы выиграли!`);
+      } else {
+        ctx.reply(
+          `Вы выбрали ${gameChoice}, но выпал ${result}. Попробуйте снова!`
+        );
+      }
+      delete gameState[ctx.chat.id]; // Завершаем игру
+    }
   }
 });
 
-bot.command("help", (ctx) => {
+// Логика игры 1 (Орел и решка)
+function startGame1(ctx) {
+  const keyboard = new InlineKeyboard()
+    .text("Орел", "orel")
+    .text("Решка", "rescha");
   ctx.reply(
-    "/start - приветствие\n/help - помощь\n/echo - повторить сообщение\n/joke - расскажи шутку"
+    "Правила:\nЯ бросаю монету, и тот, кто угадает, какой стороной она упадёт: с гербовым изображением («орлом») или противоположной ей («решкой»), выигрывает. Выбирай:",
+    {
+      reply_markup: keyboard,
+    }
   );
-});
+}
 
-bot.command("echo", (ctx) => {
-  const message = ctx.message.text.split(" ").slice(1).join(" ");
-  ctx.reply(message || "Пожалуйста, введите сообщение для повторения.");
-});
+// Логика игры 2
+function startGame2(ctx) {
+  ctx.reply("В игре 2 вас ждет вопрос! Скоро начнется...");
+}
 
-bot.command("joke", (ctx) => {
-  ctx.reply("Не буду.");
-});
+// Логика игры 3
+function startGame3(ctx) {
+  ctx.reply("В игре 3 вас ждет загадка! Скоро начнется...");
+}
 
-bot.api.setMyCommands([
-  { command: "start", description: "Запуск бота" },
-  { command: "help", description: "Получить список команд" },
-  { command: "echo", description: "Повторить сообщение" },
-  { command: "joke", description: "Рассказать шутку" },
-  { command: "cat", description: "Получить картинку кота" },
-]);
-// bot.command("cat", (ctx) => {
-//   const chatId = ctx.chat.id;
-//   if (ctx.text === "кот") {
-//     bot.sendPhoto(
-//       chatId,
-//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqCmqSFQgo-ixAhVspjiJX2XDwrcjvuqB8Hg&usqp=CAU"
-//     );
-//   }
-// });
-
+// Запуск бота
 bot.start();
-console.log("Бот поднялся");
