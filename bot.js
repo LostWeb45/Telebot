@@ -8,6 +8,13 @@ const bot = new Bot(token);
 const gameState = {};
 const randomNumbers = {}; // Храним случайное число для игры 3
 
+require("dotenv").config(); // Загружаем переменные из .env файла
+
+const port = process.env.PORT || 3000; // Используем порт из переменной или ставим 3000 по умолчанию
+const debugMode = process.env.DEBUG === "true"; // Преобразуем строку в булевое значение
+
+console.log(`Сервер запущен на порту: ${port}`);
+console.log(`Режим отладки: ${debugMode ? "Включен" : "Выключен"}`);
 // Обработчик команды /start
 bot.command("start", (ctx) => {
   const keyboard = new InlineKeyboard()
