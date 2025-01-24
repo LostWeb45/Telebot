@@ -1,7 +1,11 @@
 const { Bot } = require("grammy");
 const startCommand = require("./commands/start");
 const helpCommand = require("./commands/help");
-const { jokeCommnd, echoCommand } = require("./commands/otherCommands");
+const {
+  jokeCommnd,
+  echoCommand,
+  deletemsg,
+} = require("./commands/otherCommands");
 const { handleCoinFlip, startGame1 } = require("./games/coinflip");
 const { startGame3, randomNumbers } = require("./games/choisenumb");
 const { handleRPSGame, startGame2 } = require("./games/handlerps");
@@ -22,6 +26,7 @@ const bot = new Bot(token);
 bot.command("start", startCommand);
 bot.command("help", helpCommand);
 bot.command("joke", jokeCommnd);
+bot.command("delete", deletemsg);
 bot.command("echo", echoCommand);
 // bot.command("start", (ctx) => {
 //   const keyboard = new InlineKeyboard()

@@ -6,4 +6,8 @@ const echoCommand = (ctx) => {
 const jokeCommnd = (ctx) => {
   ctx.reply("Не буду.");
 };
-module.exports = { echoCommand, jokeCommnd };
+
+const deletemsg = (ctx) => {
+  ctx.api.deleteMessage(ctx.chat.id, ctx.message.message_id);
+};
+module.exports = { echoCommand, jokeCommnd, deletemsg };
